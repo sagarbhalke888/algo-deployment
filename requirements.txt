@@ -1,5 +1,4 @@
 Send2Trash
-setuptools==52.0.0.post20210125
 sip==4.19.13
 six==1.15.0
 sniffio==1.2.0
