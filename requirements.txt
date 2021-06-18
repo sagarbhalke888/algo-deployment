@@ -1,5 +1,5 @@
 Send2Trash
-sip==4.19.13
+sip
 six==1.15.0
 sniffio==1.2.0
 ta==0.7.0
