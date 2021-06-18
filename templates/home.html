@@ -1,0 +1,35 @@
+
+
+<!doctype html>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body style="font-family:arial, sans-serif">
+    <h1>Trading Indicator</h1>
+    <h2>Home Page</h2>
+
+
+    <label for="indicators">Choose a indicator:</label>
+
+    <select name="indicators" id="indicatorsid" onchange="location = this.value;">
+        <option value="" disabled selected>Select your option</option>
+    <option value="bb">Bollinger Band</option>
+    <option value="cci">CCI</option>
+    <!-- <option value="adx">ADX</option> -->
+    <option value="ha">Heiken Ashi</option>
+    <option value="macd">MACD</option>
+    <option value="sma">Simple Moving Average </option>
+    <option value="ema">Exponential Moving Average </option>
+    <option value="wma">Weighted Moving Average </option>
+    <option value="rsi">RSI</option>
+
+
+    </select>
+
+
+
+</body>
+
+</html>

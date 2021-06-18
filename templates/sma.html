@@ -1,0 +1,81 @@
+
+
+<!doctype html>
+<html>
+<head>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        function cb(selection) {
+            console.log("Pressed");
+            // document.getElementById("butsubmit").addEventListener("click", function(event){
+            // event.preventDefault()
+            // });
+
+            document.onclick = function(e) {
+                if (e.target instanceof HTMLAnchorElement) e.preventDefault();
+            }
+                        console.log("This is our log",$('form').serialize());
+            $.getJSON({
+                url: "/callbacksma", data: $('form').serialize(),type: 'POST', success: function (result) {
+                    Plotly.newPlot('chart', result, {});
+                    console.log(result);
+                }
+            });
+ 
+        }
+
+        function rough(selection) {
+            $.getJSON({
+                url: "/callbacksma", data: selection,type: 'POST', success: function (result) {
+                    Plotly.newPlot('chart', result, {});
+                    console.log(result);
+                }
+            });
+ 
+        }
+
+    </script>
+</head>
+
+<body style="font-family:arial, sans-serif">
+    <h1>Trading Indicator</h1>
+
+
+    <label for="indicators">Choose a indicator:</label>
+
+    <select name="indicators" id="indicatorsid" onchange="location = this.value;">
+        <option value="" disabled selected>Select your option</option>
+    <option value="bb">Bollinger Band</option>
+    <option value="cci">CCI</option>
+    <!-- <option value="adx">ADX</option> -->
+    <option value="ha">Heiken Ashi</option>
+    <option value="macd">MACD</option>
+    <option value="sma">Simple Moving Average </option>
+    <option value="ema">Exponential Moving Average </option>
+    <option value="wma">Weighted Moving Average </option>
+    <option value="rsi">RSI</option>
+
+
+    </select>
+
+    <h2>SMA</h2>
+
+
+        <form action="javascript:cb(this)" method="post" role="form">
+        <input class="form-control" type="text" id="fname" name="fname"  placeholder="Symbol">
+        <input class="form-control" type="text" id="ohlc" placeholder="Open\High\Low\Close" name="ohlc">
+        <input class="form-control" type="text" id="len" placeholder="Length" name="len" >
+        <button id="butsubmit" type="submit" class="btn btn-primary btn-block btn-large">Update Graph</button>
+        </form>
+
+    <div id="chart" class="chart"></div>
+    <div id="png_chart"></div>
+</body>
+
+<script>
+    rough("fname=GOOG&ohlc=Close&len=9")
+</script>
+</html>
