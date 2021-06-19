@@ -1,9 +1,10 @@
 
 
 <!doctype html>
-
 <html>
 <head>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
@@ -18,7 +19,7 @@
             }
                         console.log("This is our log",$('form').serialize());
             $.getJSON({
-                url: "/callback", data: $('form').serialize(),type: 'POST', success: function (result) {
+                url: "/callbackdpo", data: $('form').serialize(),type: 'POST', success: function (result) {
                     Plotly.newPlot('chart', result, {});
                     console.log(result);
                 }
@@ -28,7 +29,7 @@
 
         function rough(selection) {
             $.getJSON({
-                url: "/callback", data: selection,type: 'POST', success: function (result) {
+                url: "/callbackdpo", data: selection,type: 'POST', success: function (result) {
                     Plotly.newPlot('chart', result, {});
                     console.log(result);
                 }
@@ -46,7 +47,7 @@
     <label for="indicators">Choose a indicator:</label>
 
     <select name="indicators" id="indicatorsid" onchange="location = this.value;">
-    <option value="" disabled selected>Select your option</option>
+        <option value="" disabled selected>Select your option</option>
     <option value="bb">Bollinger Band</option>
     <option value="cci">CCI</option>
     <!-- <option value="adx">ADX</option> -->
@@ -57,28 +58,25 @@
     <option value="wma">Weighted Moving Average </option>
     <option value="rsi">RSI</option>
     <option value="allig">Alligator</option>
+    <option value="dpo">DPO</option>
 
 
     </select>
 
+    <h2>Detrended Price Oscillator </h2>
 
 
-
-    <h2>Bollinger Band</h2>
-
-    <form action="javascript:cb(this)" method="post" role="form" placeholder="Symbol">
-    <input class="form-control" type="text" id="fname" name="fname">
-        <input class="form-control" type="text" id="ohlc" placeholder="Open\High\Low\Close" name="ohlc">
+        <form action="javascript:cb(this)" method="post" role="form">
+        <input class="form-control" type="text" id="fname" name="fname"  placeholder="Symbol">
         <input class="form-control" type="text" id="len" placeholder="Length" name="len" >
         <button id="butsubmit" type="submit" class="btn btn-primary btn-block btn-large">Update Graph</button>
-    </form>
+        </form>
 
     <div id="chart" class="chart"></div>
     <div id="png_chart"></div>
-
 </body>
 
 <script>
-    rough("fname=GOOG&ohlc=Close&len=20")
+    rough("fname=GOOG&&len=21")
 </script>
 </html>

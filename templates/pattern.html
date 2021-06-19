@@ -1,0 +1,48 @@
+
+
+<!doctype html>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body style="font-family:arial, sans-serif">
+    <h1>Candle Stick Patterns</h1>
+    <h2>Home Page</h2>
+
+    <form action="patternPLOT" method="post" role="form"></form>
+    <label for="indicators">Choose a indicator:</label>
+
+    <select name="indicators" id="indicatorsid" onchange="cb(this.value)">
+    <option value="" disabled selected>Select your option</option>
+    <option value="hammer">Hammer </option>
+    <option value="ihammer">Inverse hammer</option>
+    <option value="bulengulfing">Bullish engulfing</option>
+    <option value="pline">Piercing line</option>
+    <option value="mstar">Morning star</option>
+    <option value="tws">Three white soldiers </option>
+    <option value="hman">Hanging man</option>
+    <option value="sstar">Shooting star</option>
+    <option value="berengulfing">Bearish engulfing</option>
+    <option value="estar">Evening star</option>
+    <option value="tbc">Three black crow</option>
+    <option value="dcc">Dark cloud cover</option>
+    <option value="doji">Doji</option>
+    <option value="st">Spinning top</option>
+    <option value="ftm">Falling three methods</option>
+    <option value="rtm">Rising three methods</option>
+
+    </select>
+
+
+    <button id="butsubmit" type="submit" class="btn btn-primary btn-block btn-large">Get Pattern</button>
+
+    </form>
+
+
+
+    
+
+</body>
+
+</html>

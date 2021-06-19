@@ -1,4 +1,7 @@
 from flask import Flask, render_template, request
+from ta.trend import DPOIndicator
+from ta.volume import VolumeWeightedAveragePrice
+from tapy import Indicators
 from talib.abstract import *
 import pandas as pd
 import json
@@ -20,6 +23,80 @@ app = Flask(__name__)
 def home():
     return render_template("home.html")
 
+@app.route("/adx")
+def adx():
+    return render_template("adx.html")
+
+def vwap(dataframe, label='vwap', length=3, fillna=True):
+        dataframe[label] = VolumeWeightedAveragePrice(high=dataframe['High'], low=dataframe['Low'], close=dataframe["Close"], volume=dataframe['Volume'], window=length, fillna=fillna).volume_weighted_average_price()
+        return dataframe
+
+
+@app.route('/callbackvwap', methods=['POST', 'GET'])
+def callbackvwap():
+    symbol = request.form.get("fname")
+    source = request.form.get("ohlc")
+    length = request.form.get("len")
+    return vwapCALCULATION(symbol,length)
+
+
+@app.route('/callbackadx', methods=['POST', 'GET'])
+def callbackadx():
+    symbol = request.form.get("fname")
+    length = request.form.get("len")
+    return adxCALCULATION(symbol,length)
+
+
+def adxCALCULATION(symbol,length):
+    length = int(length)
+    start = dt.datetime(2021,1,1)
+    end = dt.datetime.now()
+    data = web.DataReader(symbol,'yahoo', start, end).reset_index()
+    ADX1 = ADX(data["High"],data["Low"],data["Close"],timeperiod=length)
+    dates = data['Date']
+    fig2 = go.Figure(go.Scatter(x=dates,y=ADX1))
+    fig2.update_layout(
+    title={
+        'text': symbol,
+        'y':0.9,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'})
+
+    graphJSON = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
+
+    return graphJSON
+
+
+
+def vwapCALCULATION(symbol,length):
+
+    start = dt.datetime(2021,1,1)
+    end = dt.datetime.now()
+    data = web.DataReader(symbol,'yahoo', start, end).reset_index()
+
+    finalvwap = vwap(data,length)
+    dates = data['Date']
+
+    fig = go.Figure(data=[go.Candlestick(x=dates,
+                        open=data['Open'], high=data['High'],
+                        low=data['Low'], close=data['Close'])])
+
+    fig.add_trace(go.Scatter(x=dates,y=finalvwap['vwap']))
+
+
+@app.route('/callbackalligator', methods=['POST', 'GET'])
+def callbackalligator():
+    symbol = request.form.get("fname")
+    period_jaws = int(request.form.get("period_jaws"))
+    period_teeth = int(request.form.get("period_teeth"))
+    period_lips = int(request.form.get("period_lips"))
+    shift_jaws = int(request.form.get("shift_jaws"))
+    shift_teeth = int(request.form.get("shift_teeth"))
+    shift_lips = int(request.form.get("shift_lips"))
+
+
+    return alligatorCALCULATION(symbol,period_jaws,period_teeth,period_lips,shift_jaws,shift_teeth,shift_lips)
 
 @app.route('/callbackha', methods=['POST', 'GET'])
 def callbackha():
@@ -44,6 +121,36 @@ def callback():
 
     return BOLLINGERBANDCALC(symbol,source,length)
 
+@app.route('/callbackdpo', methods=['POST', 'GET'])
+def callbackdpo():
+
+    symbol = request.form.get("fname")
+    length = request.form.get("len")
+
+    return dpoCALCULATION(symbol,length)
+
+def dpoCALCULATION(symbol,length):
+    length = int(length)
+    start = dt.datetime(2021,1,1)
+    end = dt.datetime.now()
+    data = web.DataReader(symbol,'yahoo', start, end).reset_index()
+
+    DPOIndicator_out =DPOIndicator(data["Close"], window = length)
+    dpo = DPOIndicator_out.dpo()
+    dates = data['Date']
+
+    fig2 = go.Figure(go.Scatter(x=dates,y=dpo))
+    fig2.update_layout(
+    title={
+        'text': symbol,
+        'y':0.9,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'})
+
+    graphJSON = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
+
+    return graphJSON
 
 
 @app.route('/callbacksma', methods=['POST', 'GET'])
@@ -92,8 +199,13 @@ def index():
 def cci():
     return render_template('cci.html')
 
+@app.route('/vwap')
+def vwap():
+    return render_template('vwap.html')
 
-
+@app.route('/allig')
+def allig():
+    return render_template('allig.html')
 
 def BOLLINGERBANDCALC(symbol,source,length):
     # int_features = [x for x in request.form.data()]
@@ -178,6 +290,9 @@ def CCICALCULATION(symbol,source,length):
 def ha():
     return render_template('ha.html')
 
+@app.route('/dpo')
+def dpo():
+    return render_template('dpo.html')
 
 def haCALCULATION(symbol):
     print("Inside HA")
@@ -360,5 +475,55 @@ def rsiCALCULATION(symbol,source,length):
     graphJSON = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
     return graphJSON
 
-app.run(debug=True)
+def alligatorCALCULATION(symbol,period_jaws,period_teeth,period_lips,shift_jaws,shift_teeth,shift_lips):
+    start = dt.datetime(2021,1,1)
+    end = dt.datetime.now()
+    data = web.DataReader(symbol,'yahoo', start, end).reset_index()
+    i= Indicators(data)
+    i.alligator(period_jaws=period_jaws,
+                     period_teeth=period_teeth,
+                     period_lips=period_lips,
+                     shift_jaws=shift_jaws,
+                     shift_teeth=shift_teeth,
+                     shift_lips=shift_lips,
+                     column_name_jaws='alligator_jaw',
+                     column_name_teeth='alligator_teeth',
+                     column_name_lips='alligator_lips')
+    data = i.df
+    
+    dates = data['Date']
+
+    fig = go.Figure(data=[go.Candlestick(x=dates,
+                        open=data['Open'], high=data['High'],
+                        low=data['Low'], close=data['Close'])])
+
+    fig.add_trace(go.Scatter(x=dates,y=data['alligator_jaw']))
+    fig.add_trace(go.Scatter(x=dates,y=data['alligator_teeth']))
+    fig.add_trace(go.Scatter(x=dates,y=data['alligator_lips'] ))
+    fig.update_layout(title={
+        'text': "symbol",
+        'y':0.9,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'})
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    return graphJSON
+
+
+
+
+
+
+
+
+@app.route("/pattern")
+def pattern():
+    return render_template("pattern.html") 
+
+
+
+
+
+
+app.run(host="0.0.0.0",debug=True)
 
